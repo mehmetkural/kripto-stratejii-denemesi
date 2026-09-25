@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trend İçi Geri Çekilme</title>
+<meta name="description" content="Kripto paralar için trend içi geri çekilme stratejisi: kurallar, 10 işlemlik test, backtest analizi ve yorumlar.">
+<style>
+:root {
+  color-scheme: light;
+  --page: #f9f9f7; --surface: #fcfcfb; --surface-2: #f0efec;
+  --ink: #0b0b0b; --ink-2: #52514e; --muted: #898781;
+  --grid: #e1e0d9; --axis: #c3c2b7; --border: rgba(11,11,11,0.10);
+  --pos: #2a78d6; --neg: #e34948; --line2: #eb6834;
+  --good-text: #006300; --bad-text: #b3261e;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19; --surface-2: #242422;
+    --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+    --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,0.10);
+    --pos: #3987e5; --neg: #e66767; --line2: #d95926;
+    --good-text: #0ca30c; --bad-text: #e66767;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --page: #0d0d0d; --surface: #1a1a19; --surface-2: #242422;
+  --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+  --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,0.10);
+  --pos: #3987e5; --neg: #e66767; --line2: #d95926;
+  --good-text: #0ca30c; --bad-text: #e66767;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--page); color: var(--ink);
+  font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { max-width: 980px; margin: 0 auto; padding: 32px 16px 80px; }
+header { padding: 24px 0 8px; }
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 8px; letter-spacing: -0.01em; }
+h2 { font-size: 1.35rem; margin: 56px 0 12px; }
+h3 { font-size: 1.05rem; margin: 28px 0 8px; }
+p, li { color: var(--ink-2); max-width: 72ch; }
+strong { color: var(--ink); }
+.lead { font-size: 1.1rem; }
+nav { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 16px 0 0; font-size: .9rem; }
+nav a { color: var(--ink-2); }
+a { color: var(--pos); }
+.note { border: 1px solid var(--border); border-left: 4px solid var(--line2); background: var(--surface);
+  padding: 12px 16px; border-radius: 8px; margin: 16px 0; }
+.note p { margin: 4px 0; }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 24px 0; }
+.tile { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+.tile .k { font-size: .85rem; color: var(--ink-2); }
+.tile .v { font-size: 2rem; font-weight: 650; line-height: 1.2; margin: 4px 0; }
+.tile .s { font-size: .82rem; color: var(--muted); }
+.rules { counter-reset: r; list-style: none; padding: 0; display: grid; gap: 10px; }
+.rules li { counter-increment: r; background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 12px 16px 12px 56px; position: relative; max-width: none; }
+.rules li::before { content: counter(r); position: absolute; left: 16px; top: 12px; width: 26px; height: 26px;
+  border-radius: 50%; background: var(--surface-2); color: var(--ink); font-weight: 650;
+  display: grid; place-items: center; font-size: .9rem; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin: 16px 0; }
+.card h3 { margin-top: 0; }
+.chart { position: relative; width: 100%; }
+.chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: .85rem; color: var(--ink-2); margin: 0 0 8px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; vertical-align: -1px; margin-right: 6px; }
+.legend i.ln { height: 2px; border-radius: 1px; vertical-align: 3px; }
+.tip { position: absolute; pointer-events: none; background: var(--surface); color: var(--ink);
+  border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; font-size: .82rem; line-height: 1.4;
+  box-shadow: 0 4px 16px rgba(0,0,0,.12); opacity: 0; transition: opacity .1s; white-space: nowrap; z-index: 5; }
+.tbl-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); margin: 16px 0; }
+table { border-collapse: collapse; width: 100%; font-size: .88rem; }
+th, td { padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--grid); white-space: nowrap; }
+th { color: var(--ink-2); font-weight: 600; background: var(--surface-2); }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+tr:last-child td { border-bottom: 0; }
+.w { color: var(--good-text); font-weight: 600; }
+.l { color: var(--bad-text); font-weight: 600; }
+.trade { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; margin: 10px 0; }
+.trade .hd { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; }
+.trade .hd b { font-size: 1rem; }
+.trade .hd span { color: var(--muted); font-size: .85rem; }
+.trade p { margin: 6px 0 0; font-size: .93rem; }
+.trade .hd .badge.w { color: var(--good-text); } .trade .hd .badge.l { color: var(--bad-text); }
+.badge { font-size: .78rem; font-weight: 650; padding: 1px 8px; border-radius: 99px; border: 1px solid currentColor; }
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--ink-2); }
+footer { margin-top: 64px; font-size: .85rem; color: var(--muted); }
+footer p { color: var(--muted); }
+code { background: var(--surface-2); padding: 1px 5px; border-radius: 4px; font-size: .9em; }
+.theme-btn { float: right; background: var(--surface); color: var(--ink-2); border: 1px solid var(--border);
+  border-radius: 8px; padding: 4px 10px; font: inherit; font-size: .85rem; cursor: pointer; }
+</style>
+</head>
+<body>
+<main>
+<button class="theme-btn" id="themeBtn" type="button">Tema</button>
+<header>
+  <h1>Trend İçi Geri Çekilme (TİGÇ)</h1>
+  <p class="lead">Yükselen trenddeki kripto paralarda kısa süreli, aşırı satılmış düşüşleri alıp hızlı toparlanmada satan
+  bir strateji. Kurallar, 10 işlemlik test, tüm backtest sonuçları ve yorumları bu sayfada.</p>
+  <nav>
+    <a href="#ozet">Özet</a><a href="#strateji">Strateji</a><a href="#yontem">Test yöntemi</a>
+    <a href="#on-islem">10 işlemlik test</a><a href="#analiz">Analiz</a><a href="#piyasa">Piyasa rejimi</a>
+    <a href="#gercekcilik">8/10 ne kadar gerçekçi?</a><a href="#guncel">Güncel durum</a><a href="#riskler">Riskler</a>
+  </nav>
+</header>
+
+<div class="note">
+  <p><strong>Yatırım tavsiyesi değildir.</strong> Aşağıdaki işlemlerin hepsi geçmiş veride yapılmış <em>simülasyonlardır</em>
+  (backtest); gerçek parayla açılmış pozisyon yoktur. Geçmiş performans gelecekteki sonuçları garanti etmez.</p>
+</div>
+
+<section id="ozet">
+  <h2>Özet</h2>
+  <div class="tiles" id="tiles"></div>
+  <p id="summaryText"></p>
+</section>
+
+<section id="strateji">
+  <h2>Strateji nasıl çalışır?</h2>
+  <p>Fikir basit: güçlü bir yükseliş trendindeki coin'ler, panik satışlarından sonra genellikle birkaç gün içinde
+  toparlanır. Strateji trendin <strong>yönüne karşı değil, trendin içindeki kısa düşüşlere</strong> alım yapar
+  ve toparlanma başlar başlamaz çıkar. Tüm hesaplar <strong>günlük kapanış</strong> fiyatıyla yapılır.</p>
+  <h3>Giriş (üç koşul aynı anda)</h3>
+  <ol class="rules">
+    <li><strong>Coin trendi yukarı:</strong> Günlük kapanış, coin'in <strong>150 günlük</strong> basit hareketli ortalamasının (SMA150) üzerinde.</li>
+    <li><strong>Piyasa rejimi olumlu:</strong> Bitcoin kapanışı kendi <strong>100 günlük</strong> ortalamasının (SMA100) üzerinde. Bitcoin düşüş trendindeyken hiçbir coin'de işlem açılmaz.</li>
+    <li><strong>Kısa vadeli aşırı satım:</strong> 3 günlük RSI (RSI3) <strong>15'in altına</strong> düştü. Bu, birkaç gün üst üste sert satış olduğunu gösterir.</li>
+  </ol>
+  <h3>Çıkış (ilk gerçekleşen)</h3>
+  <ol class="rules">
+    <li><strong>Kâr al:</strong> Kapanış 5 günlük ortalamanın (SMA5) üzerine çıkar ve pozisyon kârdaysa sat. Toparlanma başladı demektir.</li>
+    <li><strong>Zarar kes:</strong> Kapanış giriş fiyatının <strong>%12</strong> altına inerse sat.</li>
+    <li><strong>Zaman stopu:</strong> 10 gün içinde hiçbiri olmazsa pozisyonu kapat.</li>
+  </ol>
+  <p>Evren: BTC, ETH, BNB, XRP, LTC, ADA, DOGE, LINK, TRX, DOT. Her coin'de aynı anda en fazla bir pozisyon.
+  Her işleme alışta ve satışta <strong>%0,1 komisyon + %0,05 kayma</strong> maliyeti düşülmüştür.</p>
+</section>
+
+<section id="yontem">
+  <h2>Test yöntemi: neden bu sonuçlara güvenebiliriz?</h2>
+  <p>En sık yapılan hata, stratejiyi test ettiği veriye göre ayarlamaktır; sonuç kâğıt üzerinde harika, gerçekte kötü
+  çıkar. Bunu önlemek için veri ikiye bölündü:</p>
+  <ul>
+    <li><strong>Eğitim dönemi (<span id="trainRange"></span>):</strong> 144 farklı parametre kombinasyonu
+    (SMA 100/150/200, BTC SMA 50/100/200, RSI eşiği 10–25, stop %8–20) sadece bu dönemde denendi.
+    Hepsinde kazanma oranı %67–84, kâr faktörü 1,2'nin üzerinde çıktı; yani strateji tek bir “şanslı” ayara bağlı değil.
+    En iyi sonucu veren değil, <strong>ızgaranın ortasındaki</strong> ayar seçildi.</li>
+    <li><strong>Test dönemi (<span id="testRange"></span>):</strong> Parametreler kilitlendikten sonra bu döneme ilk kez bakıldı.
+    “10 işlemlik test”, bu dönemde kronolojik olarak açılan <strong>ilk 10 işlemdir</strong> — seçilmiş işlemler değil.</li>
+  </ul>
+  <p>Veri: <a href="https://github.com/coinmetrics/data">Coin Metrics açık veri seti</a> (günlük USD kapanış fiyatları).
+  Açık veri setindeki son gün <strong id="dataEnd"></strong>; sonrası için veri bulunmadığından test bu tarihte biter.</p>
+</section>
+
+<section id="on-islem">
+  <h2>10 işlemlik test</h2>
+  <p id="tenText"></p>
+  <div class="tbl-wrap"><table id="tenTable"></table></div>
+  <h3>İşlem işlem yorumlar</h3>
+  <div id="tenNotes"></div>
+</section>
+
+<section id="analiz">
+  <h2>Test döneminin tamamı: <span id="nTest"></span> işlem</h2>
+  <p>İlk 10 işlem şanslı bir seri olabilir; bu yüzden test döneminin tamamına da bakmak gerekir.</p>
+  <div class="card">
+    <h3>İşlem başına net getiri</h3>
+    <div class="legend"><span><i style="background:var(--pos)"></i>Kârlı işlem</span><span><i style="background:var(--neg)"></i>Zararlı işlem</span></div>
+    <div class="chart" id="retChart"></div>
+  </div>
+  <div class="card">
+    <h3>Sermaye eğrisi (her işleme sermayenin %10'u)</h3>
+    <div class="chart" id="eqChart"></div>
+    <p id="eqText" style="font-size:.9rem"></p>
+  </div>
+  <h3>Coin bazında (test dönemi)</h3>
+  <div class="tbl-wrap"><table id="coinTable"></table></div>
+  <details><summary>Test dönemindeki tüm işlemleri göster</summary>
+    <div class="tbl-wrap"><table id="allTable"></table></div>
+  </details>
+  <h3>Yıllara göre (eğitim + test)</h3>
+  <div class="tbl-wrap"><table id="yearTable"></table></div>
+  <p><strong>2022'de hiç işlem yok:</strong> Bitcoin yılın %93'ünde 100 günlük ortalamasının altındaydı; kalan kısa
+  dönemlerde de aşırı satım sinyali oluşmadı. Piyasa rejimi filtresi ayı piyasasında stratejiyi tamamen kenarda tuttu —
+  bu, filtrenin en değerli katkısıdır.</p>
+  <p><strong>2023 zararla kapandı</strong> (başarı oranı %73, ortalama getiri -%1,0): Mart ve Ağustos 2023'teki ani
+  düşüşlerde birkaç işlem aynı anda zarar kesti. Kazanma oranının %70'lerde kaldığı yıllarda strateji zar zor başa baş
+  noktasına gelir; bu, stratejinin zayıf noktasını açıkça gösteriyor.</p>
+</section>
+
+<section id="piyasa">
+  <h2>Piyasa rejimi: Bitcoin ve 100 günlük ortalaması</h2>
+  <div class="card">
+    <div class="legend"><span><i class="ln" style="background:var(--pos)"></i>BTC kapanış</span>
+      <span><i class="ln" style="background:var(--line2)"></i>SMA100</span>
+      <span><i style="background:var(--ink);border-radius:50%;width:8px;height:8px"></i>Strateji işlem açtı (herhangi bir coin)</span></div>
+    <div class="chart" id="btcChart"></div>
+  </div>
+  <p id="regimeText"></p>
+</section>
+
+<section id="gercekcilik">
+  <h2>8/10 başarı ne kadar gerçekçi?</h2>
+  <p>Test döneminde hedef aşıldı, ama dürüst olmak gerekirse <strong>her 10 işlemde 8 başarı garanti değildir</strong>.
+  Eğitim dönemindeki işlemleri ardışık, çakışmayan 10'lu bloklara böldüğümüzde:</p>
+  <div class="card">
+    <h3>10 işlemlik bloklarda kazanan işlem sayısı (eğitim dönemi)</h3>
+    <div class="chart" id="blockChart"></div>
+  </div>
+  <p id="blockText"></p>
+</section>
+
+<section id="guncel">
+  <h2>Güncel durum (<span id="statusDate"></span>)</h2>
+  <p>Açık verinin son gününde koşulların durumu:</p>
+  <div class="tbl-wrap"><table id="statusTable"></table></div>
+  <p id="statusText"></p>
+</section>
+
+<section id="riskler">
+  <h2>Riskler ve yorumlar</h2>
+  <ul>
+    <li><strong>Yüksek kazanma oranı, asimetrik risk:</strong> Eğitim döneminde ortalama kazanç (~%<span id="aw"></span>) ortalama kayıptan
+    (~%<span id="al"></span>) küçüktür. Strateji sık sık küçük kazanır, ara sıra daha büyük kaybeder. Kârlılık, kazanma
+    oranının yüksek kalmasına bağlıdır.</li>
+    <li><strong>Boşluk (gap) riski:</strong> Zarar kes günlük kapanışla kontrol edildiği için fiyat bir günde stopun çok
+    altına inebilir. Eğitim dönemindeki en kötü işlem <strong id="worst"></strong> oldu (XRP, Aralık 2020: ABD SEC'in Ripple'a dava açmasıyla fiyat bir günde çöktü). Gerçekte
+    borsada gün içi stop emri kullanmak bu riski azaltır.</li>
+    <li><strong>Az işlem, uzun bekleme:</strong> Filtreler sıkı olduğundan strateji ayı piyasalarında aylarca işlem açmaz
+    (2022 ve Ekim 2025 – Nisan 2026 arası gibi). Bu bir kusur değil, sermayeyi korumanın yoludur; ama sabır ister.</li>
+    <li><strong>Eşzamanlı işlemler birbirine bağlıdır:</strong> Kripto paralar birlikte hareket eder. Aynı gün 3–4 coin'de
+    sinyal gelmesi (ör. 31 Temmuz 2025'te BTC, DOGE, LINK, XRP) aslında tek bir büyük bahistir. Pozisyon büyüklüğünü buna göre küçük tutun.</li>
+    <li><strong>Veri sınırı:</strong> Açık veri seti günlük kapanıştır; gerçekte kapanış fiyatından tam olarak işlem yapmak
+    küçük farklar yaratabilir.</li>
+  </ul>
+</section>
+
+<footer>
+  <p>Kodu yeniden çalıştırmak için: <code>pip install pandas numpy</code> ve <code>python3 scripts/build_results.py</code>.
+  Strateji kuralları <code>scripts/strategy.py</code> dosyasındadır; sayfa <code>docs/results.json</code> dosyasını okur.</p>
+  <p>Veri kaynağı: Coin Metrics Community Data (CC BY-NC 4.0).</p>
+</footer>
+</main>
+
+<script>
+(function(){
+  // --- tema düğmesi ---
+  const root = document.documentElement, btn = document.getElementById('themeBtn');
+  try { const t = localStorage.getItem('theme'); if (t) root.dataset.theme = t; } catch(e) {}
+  btn.addEventListener('click', () => {
+    const dark = root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    root.dataset.theme = dark ? 'light' : 'dark';
+    try { localStorage.setItem('theme', root.dataset.theme); } catch(e) {}
+    if (window.__R) drawCharts(window.__R);
+  });
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => window.__R && drawCharts(window.__R));
+  let rT; addEventListener('resize', () => { clearTimeout(rT); rT = setTimeout(() => window.__R && drawCharts(window.__R), 150); });
+
+  const $ = id => document.getElementById(id);
+  const pct = (x, d=1) => (x*100).toLocaleString('tr-TR', {minimumFractionDigits:d, maximumFractionDigits:d}) + '%';
+  const spct = (x, d=1) => (x > 0 ? '+' : '') + pct(x, d);
+  const num = (x, d=2) => x.toLocaleString('tr-TR', {minimumFractionDigits:d, maximumFractionDigits:d});
+  const price = x => x >= 100 ? num(x, 0) : x >= 1 ? num(x, 2) : num(x, 4);
+  const TRm = ['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
+  const dt = s => { const [y,m,d] = s.split('-'); return `${+d} ${TRm[+m-1]} ${y}`; };
+  const dshort = s => { const [y,m,d] = s.split('-'); return `${+d} ${TRm[+m-1]}`; };
+  const css = v => getComputedStyle(root).getPropertyValue(v).trim();
+  const esc = s => String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+
+  // Piyasa bağlamı notları (ilk 10 işlem) — tarihsel olaylar
+  const CONTEXT = {
+    '2025-01-08': 'Aralık 2024 zirvesinden sonra gelen ocak başı düzeltmesi: güçlü ABD verileri faiz indirimi beklentilerini zayıflattı ve risk iştahı geriledi.',
+    '2025-01-09': 'Aynı düzeltme dalgası; birçok coin aynı anda aşırı satım bölgesine girdi.',
+    '2025-01-13': 'BTC gün içinde 90 bin doların altına sarktıktan sonra hızla toparlandı; LTC en sert tepki veren coin oldu.',
+    '2025-01-27': 'DeepSeek yapay zeka şoku: teknoloji hisseleriyle birlikte kripto da sert satıldı, ardından hızlı toparlanma geldi.',
+    '2025-01-28': 'DeepSeek satışının ikinci günü; üç coin’de (DOGE, ETH, LINK) aynı anda sinyal oluştu ve hepsi iki gün içinde kârla kapandı.',
+  };
+
+  fetch('results.json').then(r => r.json()).then(R => { window.__R = R; render(R); drawCharts(R); })
+    .catch(e => { $('tiles').textContent = 'Sonuçlar yüklenemedi: ' + e; });
+
+  function render(R) {
+    const P = R.params, tr = R.train, te = R.test, f = R.first10;
+    const nWin = x => Math.round(x.win_rate * x.n);
+    $('tiles').innerHTML = [
+      ['10 işlemlik test', `${nWin(f)}/10`, `hedef: 8/10 · ortalama ${spct(f.avg_ret)} / işlem`],
+      ['Test dönemi (tamamı)', `${nWin(te)}/${te.n}`, `${pct(te.win_rate,0)} başarı · kâr faktörü ${num(te.profit_factor,1)}`],
+      ['Eğitim dönemi', `${nWin(tr)}/${tr.n}`, `${pct(tr.win_rate,0)} başarı · kâr faktörü ${num(tr.profit_factor,1)}`],
+      ['Ortalama işlem süresi', `${num(te.avg_days,1)} gün`, 'test dönemi'],
+    ].map(([k,v,s]) => `<div class="tile"><div class="k">${k}</div><div class="v">${v}</div><div class="s">${s}</div></div>`).join('');
+    $('summaryText').innerHTML = `Test dönemindeki ilk 10 işlemin <strong>${nWin(f)}'i kârla</strong> kapandı; 8/10 hedefi aşıldı.
+      Test döneminin tamamında ${te.n} işlemin ${nWin(te)}'i kârlı (${pct(te.win_rate,0)}). Parametreler bu döneme bakılmadan,
+      yalnızca ${R.train_range[0].slice(0,4)}–${R.train_range[1].slice(0,4)} verisiyle seçildi.`;
+    $('trainRange').textContent = `${dt(R.train_range[0])} – ${dt(R.train_range[1])}`;
+    $('testRange').textContent = `${dt(R.test_start)} – ${dt(R.data_end)}`;
+    $('dataEnd').textContent = dt(R.data_end);
+
+    // 10 işlem
+    const T = R.first10_trades;
+    $('tenText').innerHTML = `Test dönemi ${dt(R.test_start)} tarihinde başladı. Açılan ilk 10 işlem aşağıdadır
+      (${dt(T[0].entry_date)} – ${dt(T[T.length-1].exit_date)}). Sonuç: <strong>${nWin(f)}/10 başarı</strong>,
+      işlem başına ortalama net getiri <strong>${spct(f.avg_ret)}</strong>, en zayıf işlem ${spct(f.worst)}.`;
+    $('tenTable').innerHTML = tradeTable(T, true);
+    $('tenNotes').innerHTML = T.map((t, i) => {
+      const ctx = CONTEXT[t.entry_date] ? ` <em>Piyasa bağlamı:</em> ${CONTEXT[t.entry_date]}` : '';
+      return `<div class="trade"><div class="hd"><b>${i+1}. ${t.coin}</b><span>${dt(t.entry_date)} → ${dt(t.exit_date)} · ${t.days} gün</span>
+        <span class="badge ${t.win?'w':'l'}">${t.win?'Başarılı':'Başarısız'} ${spct(t.ret,2)}</span></div>
+        <p>Fiyat 150 günlük ortalamanın <strong>${spct(t.trend_gap)}</strong> üzerindeydi (trend yukarı) ve BTC 100 günlük ortalamasının
+        üstündeydi. RSI3 <strong>${num(t.rsi,1)}</strong> ile aşırı satım bölgesine girince ${price(t.entry)} $'dan alındı.
+        ${t.days} gün sonra “${esc(t.reason)}” kuralıyla ${price(t.exit)} $'dan satıldı.${ctx}</p></div>`;
+    }).join('');
+
+    // Tüm test
+    $('nTest').textContent = te.n;
+    $('allTable').innerHTML = tradeTable(R.test_trades, true);
+    $('coinTable').innerHTML = `<thead><tr><th>Coin</th><th class="num">İşlem</th><th class="num">Başarı</th><th class="num">Ort. getiri</th><th class="num">En kötü</th></tr></thead><tbody>` +
+      R.by_coin.map(c => `<tr><td>${c.coin}</td><td class="num">${c.n}</td><td class="num">${Math.round(c.win_rate*c.n)}/${c.n}</td>
+        <td class="num ${c.avg_ret>0?'w':'l'}">${spct(c.avg_ret)}</td><td class="num">${spct(c.worst)}</td></tr>`).join('') + '</tbody>';
+    const lastEq = R.test_equity[R.test_equity.length-1].equity;
+    $('eqText').innerHTML = `Her işleme sermayenin %${R.position_size*100}'u ayrılırsa test döneminde sermaye <strong>${spct(lastEq-1)}</strong> büyürdü
+      (eğitim döneminde ${spct(R.train_equity[R.train_equity.length-1].equity-1,0)}). Nakitte bekleyen para faiz getirmemiş sayılmıştır.`;
+    $('yearTable').innerHTML = `<thead><tr><th>Yıl</th><th>Dönem</th><th class="num">İşlem</th><th class="num">Başarı oranı</th><th class="num">Ort. getiri</th><th class="num">Kâr faktörü</th></tr></thead><tbody>` +
+      R.by_year.map(y => `<tr><td>${y.year}</td><td>${y.year >= 2025 ? 'Test' : 'Eğitim'}</td><td class="num">${y.n}</td><td class="num">${pct(y.win_rate,0)}</td>
+        <td class="num ${y.avg_ret>0?'w':'l'}">${spct(y.avg_ret)}</td><td class="num">${y.profit_factor==null?'—':num(y.profit_factor,1)}</td></tr>`).join('') + '</tbody>';
+
+    // Rejim metni
+    const lastTrade = R.test_trades[R.test_trades.length-1];
+    $('regimeText').innerHTML = `Test dönemindeki son işlem ${dt(lastTrade.entry_date)} tarihinde açıldı. Eylül 2025'te trend koşulları hâlâ uygundu ama yeterince sert
+      bir geri çekilme (RSI3 &lt; 15) olmadı. 10 Ekim 2025'teki büyük tasfiye çöküşüyle BTC 100 günlük ortalamasının altına indi ve Nisan 2026'ya
+      kadar orada kaldı; coin'lerin neredeyse tamamı da 150 günlük ortalamalarının altına düştü. Strateji bu düşüş boyunca hiç işlem açmadı. Şubat 2025'teki iki büyük
+      zarar (XRP, ADA) ise BTC'nin henüz ortalamasının üstünde olduğu, gümrük tarifesi haberleriyle gelen ani bir çöküşte oluştu:
+      filtre her şeyi yakalayamaz.`;
+
+    // Blok metni
+    const b = R.train_blocks, tot = Object.values(b).reduce((a,c)=>a+c,0);
+    const ge8 = [8,9,10].reduce((a,k)=>a+b[k],0);
+    $('blockText').innerHTML = `Eğitim döneminde ${tot} bloğun <strong>${ge8}'inde (${pct(ge8/tot,0)}) 8 veya daha fazla</strong> başarı var.
+      Geri kalan ${tot-ge8} blokta 6 ya da 7 başarı görüldü; 5 veya altı hiç olmadı. Yani strateji uzun vadede yaklaşık
+      <strong>${pct(tr.win_rate,0)}</strong> civarında bir başarı oranına sahip: bazı 10'lu serilerde 8 hedefinin altında kalınacağını
+      baştan kabul etmek gerekir. Önemli olan tek tek seriler değil, stratejinin kâr faktörünün 1'in belirgin üstünde kalmasıdır.`;
+
+    // Güncel durum
+    $('statusDate').textContent = dt(R.data_end);
+    const yes = (ok, a, b) => `<span class="${ok?'w':'l'}">${ok ? '✓ '+a : '✗ '+b}</span>`;
+    $('statusTable').innerHTML = `<thead><tr><th>Coin</th><th class="num">Kapanış ($)</th><th>Trend (SMA150)</th><th>BTC rejimi</th><th class="num">RSI3</th><th>Sinyal</th></tr></thead><tbody>` +
+      R.status.map(s => `<tr><td>${s.coin}</td><td class="num">${price(s.close)}</td><td>${yes(s.trend_ok,'Üstünde','Altında')}</td>
+        <td>${yes(s.btc_ok,'Olumlu','Olumsuz')}</td><td class="num">${num(s.rsi,1)}</td><td>${s.signal?'<b>AL</b>':'Bekle'}</td></tr>`).join('') + '</tbody>';
+    const nTrend = R.status.filter(s => s.trend_ok).length;
+    $('statusText').innerHTML = `BTC 100 günlük ortalamasının üstüne geri dönmüş olsa da, 10 coin'den yalnızca ${nTrend}'i kendi 150 günlük ortalamasının
+      üstünde. Strateji bu durumda <strong>bekle</strong> diyor: trend yeniden kurulmadan dip alımı yapmıyor.
+      (Not: Açık veri seti ${dt(R.data_end)} tarihinde bittiği için bu tablo bugünün durumunu göstermez.)`;
+
+    $('aw').textContent = num(tr.avg_win*100, 1);
+    $('al').textContent = num(-tr.avg_loss*100, 1);
+    $('worst').textContent = spct(tr.worst);
+  }
+
+  function tradeTable(T, idx) {
+    return `<thead><tr>${idx?'<th class="num">#</th>':''}<th>Coin</th><th>Giriş</th><th>Çıkış</th><th class="num">Alış ($)</th><th class="num">Satış ($)</th>
+      <th class="num">RSI3</th><th class="num">Gün</th><th>Çıkış nedeni</th><th class="num">Net getiri</th><th>Sonuç</th></tr></thead><tbody>` +
+      T.map((t,i) => `<tr>${idx?`<td class="num">${i+1}</td>`:''}<td>${t.coin}</td><td>${dt(t.entry_date)}</td><td>${dt(t.exit_date)}</td>
+        <td class="num">${price(t.entry)}</td><td class="num">${price(t.exit)}</td><td class="num">${num(t.rsi,1)}</td><td class="num">${t.days}</td>
+        <td>${esc(t.reason)}</td><td class="num ${t.win?'w':'l'}">${spct(t.ret,2)}</td><td class="${t.win?'w':'l'}">${t.win?'✓ Başarılı':'✗ Başarısız'}</td></tr>`).join('') + '</tbody>';
+  }
+
+  // ---------- SVG grafik yardımcıları ----------
+  const NS = 'http://www.w3.org/2000/svg';
+  function el(tag, attrs, parent) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
+  function niceTicks(lo, hi, n) {
+    const span = hi - lo, step0 = span / n, mag = Math.pow(10, Math.floor(Math.log10(step0)));
+    const step = [1,2,2.5,5,10].map(m => m*mag).find(s => span/s <= n) || 10*mag;
+    const t = []; for (let v = Math.floor(lo/step)*step; v <= hi + 1e-9; v += step) t.push(+v.toFixed(10)); return t;
+  }
+  function frame(host, H) {
+    host.innerHTML = '';
+    const W = Math.max(300, host.clientWidth);
+    const svg = el('svg', {viewBox: `0 0 ${W} ${H}`, role: 'img'}, host);
+    const tip = document.createElement('div'); tip.className = 'tip'; host.appendChild(tip);
+    const show = (html, x, y) => { tip.innerHTML = html; tip.style.opacity = 1;
+      const tw = tip.offsetWidth; tip.style.left = Math.min(Math.max(0, x - tw/2), W - tw) + 'px'; tip.style.top = (y - tip.offsetHeight - 12) + 'px'; };
+    const hide = () => tip.style.opacity = 0;
+    return {svg, W, show, hide};
+  }
+  function yAxis(svg, y, ticks, x0, x1, fmt, ink) {
+    for (const t of ticks) {
+      el('line', {x1:x0, x2:x1, y1:y(t), y2:y(t), stroke: css('--grid'), 'stroke-width':1}, svg);
+      const tx = el('text', {x:x0-8, y:y(t)+4, 'text-anchor':'end', 'font-size':11, fill: ink}, svg); tx.textContent = fmt(t);
+    }
+  }
+
+  function drawCharts(R) {
+    const ink = css('--muted'), pos = css('--pos'), neg = css('--neg'), axis = css('--axis'), surf = css('--surface');
+
+    // 1) Getiri çubukları
+    (function(){
+      const T = R.test_trades, host = $('retChart'), H = 260, {svg, W, show, hide} = frame(host, H);
+      const m = {l:48, r:8, t:12, b:28}, iw = W-m.l-m.r, ih = H-m.t-m.b;
+      const lo = Math.min(0, ...T.map(t=>t.ret)), hi = Math.max(0, ...T.map(t=>t.ret));
+      const ticks = niceTicks(lo, hi, 5), y0 = Math.min(lo, ticks[0]), y1 = Math.max(hi, ticks[ticks.length-1]);
+      const y = v => m.t + ih * (1 - (v - y0)/(y1 - y0));
+      yAxis(svg, y, ticks, m.l, W-m.r, v => (v*100).toFixed(0)+'%', ink);
+      const bw = iw / T.length, gap = Math.min(2, bw*0.2);
+      T.forEach((t, i) => {
+        const x = m.l + i*bw + gap/2, w = bw - gap, top = y(Math.max(0,t.ret)), h = Math.max(1, Math.abs(y(t.ret) - y(0)));
+        const r = Math.min(4, w/2, h);
+        const d = t.ret >= 0
+          ? `M${x},${top+h}V${top+r}Q${x},${top} ${x+r},${top}H${x+w-r}Q${x+w},${top} ${x+w},${top+r}V${top+h}Z`
+          : `M${x},${top}V${top+h-r}Q${x},${top+h} ${x+r},${top+h}H${x+w-r}Q${x+w},${top+h} ${x+w},${top+h-r}V${top}Z`;
+        el('path', {d, fill: t.win ? pos : neg}, svg);
+        const hit = el('rect', {x: m.l + i*bw, y: m.t, width: bw, height: ih, fill: 'transparent'}, svg);
+        hit.addEventListener('mousemove', () => show(`<b>${i+1}. ${t.coin}</b> · ${dshort(t.entry_date)} → ${dshort(t.exit_date)}<br>Net getiri: <b>${spct(t.ret,2)}</b><br>${esc(t.reason)} · ${t.days} gün`, x + w/2, y(Math.max(0,t.ret))));
+        hit.addEventListener('mouseleave', hide);
+      });
+      el('line', {x1:m.l, x2:W-m.r, y1:y(0), y2:y(0), stroke: axis, 'stroke-width':1}, svg);
+      [0, 9, T.length-1].forEach(i => { const tx = el('text', {x: m.l + (i+0.5)*bw, y: H-8, 'text-anchor':'middle', 'font-size':11, fill: ink}, svg); tx.textContent = `#${i+1}`; });
+      // ilk 10 işlemi işaretle
+      el('line', {x1: m.l + 10*bw, x2: m.l + 10*bw, y1: m.t, y2: m.t+ih, stroke: axis, 'stroke-dasharray':'3 3'}, svg);
+      const lab = el('text', {x: m.l + 10*bw - 6, y: m.t + 10, 'text-anchor':'end', 'font-size':11, fill: css('--ink-2')}, svg); lab.textContent = 'ilk 10 işlem';
+    })();
+
+    // Ortak çizgi grafiği
+    function lineChart(host, series, H, fmtY, tipFn, markers) {
+      const {svg, W, show, hide} = frame(host, H);
+      const m = {l:56, r:12, t:12, b:28}, iw = W-m.l-m.r, ih = H-m.t-m.b;
+      const pts = series[0].data, N = pts.length;
+      const t0 = Date.parse(pts[0].date), t1 = Date.parse(pts[N-1].date);
+      const x = d => m.l + iw * (Date.parse(d) - t0) / Math.max(1, t1 - t0);
+      const all = series.flatMap(s => s.data.map(s.v)).filter(v => v != null);
+      const ticks = niceTicks(Math.min(...all), Math.max(...all), 5);
+      const y0 = Math.min(ticks[0], ...all), y1 = Math.max(ticks[ticks.length-1], ...all);
+      const y = v => m.t + ih * (1 - (v - y0)/(y1 - y0));
+      yAxis(svg, y, ticks, m.l, W-m.r, fmtY, ink);
+      // x etiketleri: ay başları
+      const months = []; let last = '';
+      pts.forEach(p => { const k = p.date.slice(0,7); if (k !== last) { months.push(p.date); last = k; } });
+      const every = Math.ceil(months.length / Math.max(2, Math.floor(iw / 80)));
+      months.forEach((d, i) => { if (i % every) return; const tx = el('text', {x: x(d), y: H-8, 'text-anchor':'middle', 'font-size':11, fill: ink}, svg);
+        const [yy, mm] = d.split('-'); tx.textContent = `${TRm[+mm-1]} ${yy.slice(2)}`; });
+      el('line', {x1:m.l, x2:W-m.r, y1:m.t+ih, y2:m.t+ih, stroke: axis}, svg);
+      series.forEach(s => {
+        const d = s.data.filter(p => s.v(p) != null).map((p,i) => `${i?'L':'M'}${x(p.date).toFixed(1)},${y(s.v(p)).toFixed(1)}`).join('');
+        el('path', {d, fill:'none', stroke: s.color, 'stroke-width':2, 'stroke-linejoin':'round', 'stroke-linecap':'round'}, svg);
+      });
+      if (markers) markers.forEach(mk => el('circle', {cx: x(mk.date), cy: y(mk.v), r: 4, fill: css('--ink'), stroke: surf, 'stroke-width': 2}, svg));
+      const cross = el('line', {y1: m.t, y2: m.t+ih, stroke: axis, 'stroke-width':1, opacity:0}, svg);
+      const dots = series.map(s => el('circle', {r:4, fill: s.color, stroke: surf, 'stroke-width':2, opacity:0}, svg));
+      const hit = el('rect', {x:m.l, y:m.t, width:iw, height:ih, fill:'transparent'}, svg);
+      hit.addEventListener('mousemove', ev => {
+        const r = svg.getBoundingClientRect(), px = (ev.clientX - r.left) * W / r.width;
+        const tt = t0 + (px - m.l) / iw * (t1 - t0);
+        let best = 0, bd = Infinity; pts.forEach((p,i) => { const dd = Math.abs(Date.parse(p.date) - tt); if (dd < bd) { bd = dd; best = i; } });
+        const p = pts[best], cx = x(p.date);
+        cross.setAttribute('x1', cx); cross.setAttribute('x2', cx); cross.setAttribute('opacity', 1);
+        series.forEach((s, k) => { const v = s.v(s.data[best]); if (v == null) return; dots[k].setAttribute('cx', cx); dots[k].setAttribute('cy', y(v)); dots[k].setAttribute('opacity', 1); });
+        show(tipFn(p), cx * r.width / W, y(series[0].v(p)) * r.height / H);
+      });
+      hit.addEventListener('mouseleave', () => { hide(); cross.setAttribute('opacity', 0); dots.forEach(d => d.setAttribute('opacity', 0)); });
+    }
+
+    // 2) Sermaye eğrisi
+    const eq = [{date: R.test_start, equity: 1}, ...R.test_equity];
+    lineChart($('eqChart'), [{data: eq, v: p => p.equity, color: pos}], 240,
+      v => spct(v-1, 0), p => `${dt(p.date)}<br>Sermaye: <b>${spct(p.equity-1,2)}</b>`);
+
+    // 3) BTC ve SMA100
+    const entries = [...new Set(R.test_trades.map(t => t.entry_date))];
+    const byDate = Object.fromEntries(R.btc_series.map(p => [p.date, p]));
+    lineChart($('btcChart'), [
+      {data: R.btc_series, v: p => p.close, color: pos},
+      {data: R.btc_series, v: p => p.sma, color: css('--line2')},
+    ], 300, v => (v/1000).toFixed(0)+'b $',
+      p => { const n = R.test_trades.filter(t => t.entry_date === p.date).map(t => t.coin);
+        return `${dt(p.date)}<br>BTC: <b>${num(p.close,0)} $</b><br>SMA100: ${num(p.sma,0)} $<br>${p.close > p.sma ? 'Rejim: olumlu' : 'Rejim: olumsuz'}${n.length ? '<br>Alım: ' + n.join(', ') : ''}`; },
+      entries.filter(d => byDate[d]).map(d => ({date: d, v: byDate[d].close})));
+
+    // 4) Blok dağılımı
+    (function(){
+      const b = R.train_blocks, keys = ['5','6','7','8','9','10'], host = $('blockChart'), H = 220, {svg, W, show, hide} = frame(host, H);
+      const m = {l:40, r:8, t:20, b:36}, iw = W-m.l-m.r, ih = H-m.t-m.b;
+      const mx = Math.max(...keys.map(k => b[k])), ticks = niceTicks(0, mx, 4), top = Math.max(mx, ticks[ticks.length-1]);
+      const y = v => m.t + ih * (1 - v/top);
+      yAxis(svg, y, ticks, m.l, W-m.r, v => v, ink);
+      const bw = iw / keys.length, w = Math.min(56, bw*0.6);
+      keys.forEach((k, i) => {
+        const v = b[k], x = m.l + i*bw + (bw-w)/2, t = y(v), h = y(0) - t, r = Math.min(4, h/2);
+        if (v) el('path', {d:`M${x},${t+h}V${t+r}Q${x},${t} ${x+r},${t}H${x+w-r}Q${x+w},${t} ${x+w},${t+r}V${t+h}Z`, fill: +k >= 8 ? pos : neg}, svg);
+        const lv = el('text', {x: x+w/2, y: t-6, 'text-anchor':'middle', 'font-size':12, fill: css('--ink-2')}, svg); lv.textContent = v;
+        const lx = el('text', {x: x+w/2, y: H-16, 'text-anchor':'middle', 'font-size':12, fill: ink}, svg); lx.textContent = `${k}/10`;
+        const hit = el('rect', {x: m.l + i*bw, y: m.t, width: bw, height: ih, fill: 'transparent'}, svg);
+        hit.addEventListener('mousemove', () => show(`${v} blokta ${k}/10 başarı<br>${+k >= 8 ? 'Hedef tuttu' : 'Hedefin altında'}`, x+w/2, t));
+        hit.addEventListener('mouseleave', hide);
+      });
+      el('line', {x1:m.l, x2:W-m.r, y1:y(0), y2:y(0), stroke: axis}, svg);
+      const cap = el('text', {x: m.l + iw/2, y: H-2, 'text-anchor':'middle', 'font-size':11, fill: ink}, svg);
+      cap.textContent = 'Kırmızı: 8 hedefinin altında · Mavi: hedef tuttu';
+    })();
+  }
+})();
+</script>
+</body>
+</html>
