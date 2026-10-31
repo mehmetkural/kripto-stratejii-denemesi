@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mintfolio — Honest Coin Values</title>
+<meta name="description" content="Scan a coin, see what it actually sold for, and track your whole collection's value. No weekly plans, no trial traps.">
+<style>
+  :root{
+    --bg:#faf8f4; --surface:#ffffff; --text:#1d1b18; --muted:#6b655c; --line:#e7e2d8;
+    --accent:#a4741a; --accent-ink:#ffffff; --ok:#2f7d4f; --bad:#b4442f;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#14130f; --surface:#1d1b17; --text:#f1ede5; --muted:#a39c90; --line:#2f2c26;
+      --accent:#d9a441; --accent-ink:#1a1408; --ok:#6cc08f; --bad:#e3846f; }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);
+    font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  .wrap{max-width:960px;margin:0 auto;padding:0 16px}
+  header{padding:20px 0;display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px}
+  .dot{width:26px;height:26px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#f4d48a,var(--accent));}
+  .hero{padding:40px 0 24px}
+  h1{font-size:clamp(30px,6vw,48px);line-height:1.1;margin:0 0 16px;letter-spacing:-.02em}
+  .lead{font-size:clamp(17px,2.4vw,20px);color:var(--muted);max-width:640px;margin:0 0 24px}
+  .btn{display:inline-block;background:var(--accent);color:var(--accent-ink);border:0;border-radius:10px;
+    padding:14px 22px;font-weight:700;font-size:16px;text-decoration:none;cursor:pointer}
+  .small{font-size:14px;color:var(--muted)}
+  section{padding:32px 0;border-top:1px solid var(--line)}
+  h2{font-size:24px;margin:0 0 18px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px}
+  .card h3{margin:0 0 6px;font-size:17px}
+  .card p{margin:0;color:var(--muted);font-size:15px}
+  .vs{width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .vs th,.vs td{padding:12px 14px;border-bottom:1px solid var(--line);text-align:left;font-size:15px;vertical-align:top}
+  .vs th{font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+  .vs td.no{color:var(--bad)} .vs td.yes{color:var(--ok)}
+  .tablewrap{overflow-x:auto}
+  form{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px;max-width:620px}
+  label{display:block;font-weight:600;margin:16px 0 8px}
+  input[type=email],select{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;
+    background:var(--bg);color:var(--text);font-size:16px}
+  .opts label{font-weight:400;margin:6px 0;display:flex;gap:10px;align-items:flex-start;cursor:pointer}
+  .opts input{margin-top:4px}
+  .msg{margin-top:14px;font-weight:600}
+  footer{padding:30px 0 50px;color:var(--muted);font-size:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header><span class="dot" aria-hidden="true"></span>Mintfolio</header>
+
+  <div class="hero">
+    <h1>Know what your coins are <em>actually</em> worth.</h1>
+    <p class="lead">Scan a coin or banknote. See real recent sales with sources and dates, not a made-up
+      range. Track your whole collection's value like a portfolio.</p>
+    <a class="btn" href="#join">Join the early access list</a>
+    <p class="small">Free to join · Founding members lock in a lower price forever</p>
+  </div>
+
+  <section>
+    <h2>Built to fix what collectors hate about coin apps</h2>
+    <div class="grid">
+      <div class="card"><h3>💵 Values with receipts</h3><p>Every price links to the actual sold listings and auction results it came from, with date and sample size. Not enough data? We say “unknown” instead of guessing.</p></div>
+      <div class="card"><h3>🔍 Top-3 matches, you confirm</h3><p>No more confidently wrong IDs. We show the 3 best candidates side by side so you pick the right variety. Strong on world, European and Ottoman coins.</p></div>
+      <div class="card"><h3>📐 Honest grade ranges</h3><p>Guided photos (light, angle, both sides) and a grade range like “XF40–AU50”, plus a clear signal when a coin is worth sending to PCGS or NGC.</p></div>
+      <div class="card"><h3>⚠️ Error &amp; fake checklist</h3><p>Known doubled dies, repunched mint marks and commonly faked coins are flagged with what to look for, including weight and diameter checks.</p></div>
+      <div class="card"><h3>📈 Collection portfolio</h3><p>Total value, gains over time, wishlist and price alerts. Export to CSV anytime. Your collection stays yours.</p></div>
+      <div class="card"><h3>🤝 No trial traps</h3><p>No weekly plans. We remind you 48 hours before any trial ends, and you can cancel in one tap inside the app.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>How it compares</h2>
+    <div class="tablewrap">
+    <table class="vs">
+      <thead><tr><th></th><th>Typical coin scanner apps</th><th>Mintfolio</th></tr></thead>
+      <tbody>
+        <tr><td>Where values come from</td><td class="no">Not shown</td><td class="yes">Linked sold listings and auctions</td></tr>
+        <tr><td>Identification</td><td class="no">One answer, often wrong on non-US coins</td><td class="yes">Top-3 candidates you confirm</td></tr>
+        <tr><td>Grading</td><td class="no">Single grade, lighting-sensitive</td><td class="yes">Guided capture and grade range</td></tr>
+        <tr><td>Billing</td><td class="no">Weekly plans, silent trial renewals</td><td class="yes">No weekly plans, reminder before charge</td></tr>
+        <tr><td>Collection tracking</td><td class="no">Basic list</td><td class="yes">Portfolio value over time</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </section>
+
+  <section id="join">
+    <h2>Get early access</h2>
+    <form id="waitlist" novalidate>
+      <label for="email">Email</label>
+      <input id="email" name="email" type="email" required placeholder="you@example.com" autocomplete="email">
+
+      <label for="collect">What do you mainly collect?</label>
+      <select id="collect" name="collect">
+        <option>US coins</option><option>World / foreign coins</option><option>Ancient coins</option>
+        <option>Banknotes</option><option>Bullion (gold/silver)</option><option>Just found some old coins</option>
+      </select>
+
+      <fieldset class="opts" style="border:0;padding:0;margin:0">
+        <label style="font-weight:600;margin:16px 0 8px">Which plan would you pick at launch?</label>
+        <label><input type="radio" name="price" value="founding-24.99-yr" required> Founding member: $24.99/year, locked forever</label>
+        <label><input type="radio" name="price" value="34.99-yr"> $34.99/year</label>
+        <label><input type="radio" name="price" value="6.99-mo"> $6.99/month</label>
+        <label><input type="radio" name="price" value="lifetime-89.99"> $89.99 one-time, lifetime</label>
+        <label><input type="radio" name="price" value="free-only"> I'd only use a free version</label>
+      </fieldset>
+
+      <fieldset class="opts" style="border:0;padding:0;margin:0">
+        <label style="font-weight:600;margin:16px 0 8px">The one feature you want most</label>
+        <label><input type="radio" name="feature" value="sourced-values"> Trustworthy values with sources</label>
+        <label><input type="radio" name="feature" value="accurate-id"> Accurate ID for world/ancient coins</label>
+        <label><input type="radio" name="feature" value="grading"> Better grading</label>
+        <label><input type="radio" name="feature" value="errors-fakes"> Error and fake detection</label>
+        <label><input type="radio" name="feature" value="portfolio"> Collection value tracking</label>
+      </fieldset>
+
+      <div style="margin-top:20px"><button class="btn" type="submit">Join the list</button></div>
+      <div class="msg" id="msg" role="status" aria-live="polite"></div>
+    </form>
+  </section>
+
+  <footer>© 2026 Mintfolio (working name). We'll only email you about the launch. No spam, unsubscribe anytime.</footer>
+</div>
+
+<script>
+  // Set this to your Formspree / Tally / Getform endpoint before publishing,
+  // e.g. "https://formspree.io/f/abcdwxyz"
+  const FORM_ENDPOINT = "";
+
+  const form = document.getElementById('waitlist');
+  const msg = document.getElementById('msg');
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = form.email.value.trim();
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { msg.textContent = 'Please enter a valid email.'; return; }
+    if (!form.price.value) { msg.textContent = 'Please pick a plan option.'; return; }
+    if (!FORM_ENDPOINT) { msg.textContent = 'Form endpoint not configured yet.'; return; }
+    msg.textContent = 'Sending…';
+    try {
+      const res = await fetch(FORM_ENDPOINT, {
+        method: 'POST', headers: { 'Accept': 'application/json' }, body: new FormData(form)
+      });
+      if (res.ok) { form.reset(); msg.textContent = "You're on the list. Thanks! 🎉"; }
+      else { msg.textContent = 'Something went wrong. Please try again.'; }
+    } catch { msg.textContent = 'Network error. Please try again.'; }
+  });
+</script>
+</body>
+</html>
