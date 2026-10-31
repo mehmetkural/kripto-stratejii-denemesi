@@ -89,6 +89,8 @@
   <section id="join">
     <h2>Get early access</h2>
     <form id="waitlist" novalidate>
+      <input type="hidden" name="_subject" value="New PoolPilot waitlist signup">
+      <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
       <label for="email">Email</label>
       <input id="email" name="email" type="email" required placeholder="you@example.com" autocomplete="email">
 
@@ -129,7 +131,7 @@
 <script>
   // Set this to your Formspree / Tally / Getform endpoint before publishing,
   // e.g. "https://formspree.io/f/abcdwxyz"
-  const FORM_ENDPOINT = "";
+  const FORM_ENDPOINT = "https://formspree.io/f/meaargea";
 
   const form = document.getElementById('waitlist');
   const msg = document.getElementById('msg');
