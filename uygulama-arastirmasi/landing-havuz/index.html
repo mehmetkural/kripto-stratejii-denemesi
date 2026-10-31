@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PoolPilot — Flat-Rate Pool Software</title>
+<meta name="description" content="Pool route software for solo pros: routes, chem logs, service reports and invoicing for one flat price.">
+<style>
+  :root{
+    --bg:#faf8f4; --surface:#ffffff; --text:#1d1b18; --muted:#6b655c; --line:#e7e2d8;
+    --accent:#0b7fab; --accent-ink:#ffffff; --ok:#2f7d4f; --bad:#b4442f;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#14130f; --surface:#1d1b17; --text:#f1ede5; --muted:#a39c90; --line:#2f2c26;
+      --accent:#4cc3ee; --accent-ink:#1a1408; --ok:#6cc08f; --bad:#e3846f; }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);
+    font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  .wrap{max-width:960px;margin:0 auto;padding:0 16px}
+  header{padding:20px 0;display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px}
+  .dot{width:26px;height:26px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#9fe3fa,var(--accent));}
+  .hero{padding:40px 0 24px}
+  h1{font-size:clamp(30px,6vw,48px);line-height:1.1;margin:0 0 16px;letter-spacing:-.02em}
+  .lead{font-size:clamp(17px,2.4vw,20px);color:var(--muted);max-width:640px;margin:0 0 24px}
+  .btn{display:inline-block;background:var(--accent);color:var(--accent-ink);border:0;border-radius:10px;
+    padding:14px 22px;font-weight:700;font-size:16px;text-decoration:none;cursor:pointer}
+  .small{font-size:14px;color:var(--muted)}
+  section{padding:32px 0;border-top:1px solid var(--line)}
+  h2{font-size:24px;margin:0 0 18px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px}
+  .card h3{margin:0 0 6px;font-size:17px}
+  .card p{margin:0;color:var(--muted);font-size:15px}
+  .vs{width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .vs th,.vs td{padding:12px 14px;border-bottom:1px solid var(--line);text-align:left;font-size:15px;vertical-align:top}
+  .vs th{font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+  .vs td.no{color:var(--bad)} .vs td.yes{color:var(--ok)}
+  .tablewrap{overflow-x:auto}
+  form{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px;max-width:620px}
+  label{display:block;font-weight:600;margin:16px 0 8px}
+  input[type=email],select{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;
+    background:var(--bg);color:var(--text);font-size:16px}
+  .opts label{font-weight:400;margin:6px 0;display:flex;gap:10px;align-items:flex-start;cursor:pointer}
+  .opts input{margin-top:4px}
+  .msg{margin-top:14px;font-weight:600}
+  footer{padding:30px 0 50px;color:var(--muted);font-size:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header><span class="dot" aria-hidden="true"></span>PoolPilot</header>
+
+  <div class="hero">
+    <h1>Pool route software that doesn't charge you <em>per pool</em>.</h1>
+    <p class="lead">Routes, chem logs, photo service reports and invoicing, all from your phone.
+      One flat price whether you service 20 pools or 200.</p>
+    <a class="btn" href="#join">Get early access</a>
+    <p class="small">Founding members lock in $29/month forever</p>
+  </div>
+
+  <section>
+    <h2>Built for solo pool pros</h2>
+    <div class="grid">
+      <div class="card"><h3>💲 Flat $39/month</h3><p>No per-pool fees and no surprise tier changes. Grow your route without your software bill growing with it.</p></div>
+      <div class="card"><h3>💬 Texts from your own number</h3><p>"On my way" and "Service done" messages go out from your own phone number. No per-text charges.</p></div>
+      <div class="card"><h3>🧪 Chem log + LSI</h3><p>Log pH, chlorine, alkalinity and CYA in seconds. Get dosing suggestions and a full history for every pool.</p></div>
+      <div class="card"><h3>📸 Auto service reports</h3><p>Before and after photos plus readings are emailed to the customer automatically when you finish a stop.</p></div>
+      <div class="card"><h3>🧾 Invoice from your phone</h3><p>Monthly auto-invoicing, card and ACH payments, and the full billing screen on mobile, not just on desktop.</p></div>
+      <div class="card"><h3>🗺️ Optimized routes</h3><p>Drag-and-drop route days, best stop order and skip/reschedule in one tap.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>What you'd pay</h2>
+    <div class="tablewrap">
+    <table class="vs">
+      <thead><tr><th>Pools on your route</th><th>Per-pool software ($1–2/pool)</th><th>PoolPilot</th></tr></thead>
+      <tbody>
+        <tr><td>50 pools</td><td class="no">$50–100/mo</td><td class="yes">$39/mo</td></tr>
+        <tr><td>100 pools</td><td class="no">$100–200/mo</td><td class="yes">$39/mo</td></tr>
+        <tr><td>Customer texts</td><td class="no">Extra per message</td><td class="yes">Included</td></tr>
+        <tr><td>Billing on mobile</td><td class="no">Limited or desktop-only</td><td class="yes">Yes</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </section>
+
+  <section id="join">
+    <h2>Get early access</h2>
+    <form id="waitlist" novalidate>
+      <label for="email">Email</label>
+      <input id="email" name="email" type="email" required placeholder="you@example.com" autocomplete="email">
+
+      <label for="pools">How many pools are on your route?</label>
+      <select id="pools" name="pools">
+        <option>1–20</option><option>21–40</option><option>41–75</option><option>76–150</option><option>150+</option><option>Not in the pool business yet</option>
+      </select>
+
+      <label for="current">What do you use today?</label>
+      <select id="current" name="current">
+        <option>Skimmer</option><option>Pool Brain</option><option>Pool Office Manager</option><option>Jobber / Housecall Pro</option><option>Paper / spreadsheets</option><option>Other</option>
+      </select>
+
+      <fieldset class="opts" style="border:0;padding:0;margin:0">
+        <label style="font-weight:600;margin:16px 0 8px">Which plan would you pick at launch?</label>
+        <label><input type="radio" name="price" value="founding-29-mo" required> Founding member: $29/month, locked forever</label>
+        <label><input type="radio" name="price" value="39-mo"> $39/month</label>
+        <label><input type="radio" name="price" value="390-yr"> $390/year (2 months free)</label>
+        <label><input type="radio" name="price" value="not-switching"> I wouldn't switch from my current tool</label>
+      </fieldset>
+
+      <fieldset class="opts" style="border:0;padding:0;margin:0">
+        <label style="font-weight:600;margin:16px 0 8px">The one feature you need most</label>
+        <label><input type="radio" name="feature" value="flat-price"> Flat price</label>
+        <label><input type="radio" name="feature" value="mobile-billing"> Invoicing and payments on mobile</label>
+        <label><input type="radio" name="feature" value="chem-log"> Chem log and dosing</label>
+        <label><input type="radio" name="feature" value="service-reports"> Automatic customer service reports</label>
+        <label><input type="radio" name="feature" value="routing"> Route optimization</label>
+      </fieldset>
+
+      <div style="margin-top:20px"><button class="btn" type="submit">Join the list</button></div>
+      <div class="msg" id="msg" role="status" aria-live="polite"></div>
+    </form>
+  </section>
+
+  <footer>© 2026 PoolPilot (working name). We'll only email you about the launch. No spam, unsubscribe anytime.</footer>
+</div>
+<script>
+  // Set this to your Formspree / Tally / Getform endpoint before publishing,
+  // e.g. "https://formspree.io/f/abcdwxyz"
+  const FORM_ENDPOINT = "";
+
+  const form = document.getElementById('waitlist');
+  const msg = document.getElementById('msg');
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = form.email.value.trim();
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { msg.textContent = 'Please enter a valid email.'; return; }
+    if (!form.price.value) { msg.textContent = 'Please pick a plan option.'; return; }
+    if (!FORM_ENDPOINT) { msg.textContent = 'Form endpoint not configured yet.'; return; }
+    msg.textContent = 'Sending…';
+    try {
+      const res = await fetch(FORM_ENDPOINT, {
+        method: 'POST', headers: { 'Accept': 'application/json' }, body: new FormData(form)
+      });
+      if (res.ok) { form.reset(); msg.textContent = "You're on the list. Thanks! 🎉"; }
+      else { msg.textContent = 'Something went wrong. Please try again.'; }
+    } catch { msg.textContent = 'Network error. Please try again.'; }
+  });
+</script>
+</body>
+</html>
