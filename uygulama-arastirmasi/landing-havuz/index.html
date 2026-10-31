@@ -89,6 +89,7 @@
   <section id="join">
     <h2>Get early access</h2>
     <form id="waitlist" novalidate>
+      <input type="hidden" name="source" id="source" value="direct">
       <input type="hidden" name="_subject" value="New PoolPilot waitlist signup">
       <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
       <label for="email">Email</label>
@@ -134,6 +135,10 @@
   const FORM_ENDPOINT = "https://formspree.io/f/meaargea";
 
   const form = document.getElementById('waitlist');
+  try {
+    const ref = new URLSearchParams(location.search).get('ref');
+    if (ref) document.getElementById('source').value = ref.slice(0, 60);
+  } catch {}
   const msg = document.getElementById('msg');
   form.addEventListener('submit', async (e) => {
     e.preventDefault();

@@ -36,12 +36,12 @@ Kural: Önce değer verin, sonra link paylaşın. Her toplulukta tek gönderi at
 > - no weekly plans, and a reminder before any trial charges
 >
 > **What's the #1 thing current apps get wrong for you?** If you want early access, there's a short
-> list here: [link]. No spam, I'm just gauging interest before I build.
+> list here: https://mintfolio-site.netlify.app/?ref=reddit. No spam, I'm just gauging interest before I build.
 
 ### 2) Facebook grubu — kısa versiyon
 > Quick question for the group 🙏 What frustrates you most about coin identifier apps: wrong IDs,
 > made-up values, or subscription traps? I'm building one that shows the actual sold prices behind every
-> value. Early access list if you're curious: [link]
+> value. Early access list if you're curious: https://mintfolio-site.netlify.app/?ref=facebook
 
 ### 3) Forum (CoinTalk / Collectors Universe) — teknik ton
 **Title:** Feedback wanted: sourcing values from realized prices in a mobile app
@@ -50,19 +50,25 @@ Kural: Önce değer verin, sonra link paylaşın. Her toplulukta tek gönderi at
 > listings, and shows the sample size and date for every estimate. If there aren't enough comparable
 > sales, it says "insufficient data" instead of guessing. For grading, it gives a range and tells you when
 > slabbing is worth it. Which data sources would you consider credible, and what would you never trust an
-> app to do? Waitlist for anyone interested: [link]
+> app to do? Waitlist for anyone interested: https://mintfolio-site.netlify.app/?ref=forum
 
 ### 4) Türkçe (Osmanlı / Türk paraları grupları)
 > Merhaba, madeni ve kâğıt para tanıyan bir uygulama geliştiriyorum. Mevcut uygulamalar Osmanlı ve
 > Türkiye Cumhuriyeti paralarında çok zayıf. Değerleri de gerçek satışlara dayanmıyor. Sizce en çok hangi
-> özellik işe yarar? Erken erişim listesi: [link]
+> özellik işe yarar? Erken erişim listesi: https://mintfolio-site.netlify.app/?ref=tr-facebook
 
-## D. Ölçüm tablosu (doldurun)
+## D. Kanal etiketleri
+Linkteki `?ref=` değeri her kaydın Formspree'deki **source** alanına yazılır. Her topluluk için etiketi
+değiştirin ki hangi kanalın daha iyi çalıştığı görülsün:
+`reddit-coins`, `reddit-coincollecting`, `reddit-papermoney`, `facebook-worldcoins`, `cointalk`, `discord`, `tr-facebook`…
+Örnek: `https://mintfolio-site.netlify.app/?ref=reddit-coins`
+
+## E. Ölçüm tablosu (doldurun)
 | Kanal | Tarih | Görüntülenme / ziyaret | Kayıt | Oran | En çok gelen yorum |
 |---|---|---|---|---|---|
 | | | | | | |
 
-## E. Karar kuralları
+## F. Karar kuralları
 - **Kayıt oranı %10'un üzerinde** ve fiyat sorusunda "ücretsiz istiyorum" diyenler %50'nin altındaysa → MVP'ye geçilir.
 - **Kayıt oranı %5–10** → başlık ve açı değiştirilir (ör. "değer" yerine "sahte tespiti" öne çıkarılır), tekrar test edilir.
 - **Kayıt oranı %5'in altında** → fikir askıya alınır. Listedeki 2. sıradaki fikir (zanaat teklif uygulaması)

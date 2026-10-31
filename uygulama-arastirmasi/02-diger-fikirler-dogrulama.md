@@ -127,13 +127,15 @@ Hızlı ilk gelir isteniyorsa madeni para, sağlam ve öngörülebilir gelir ist
 > I keep hearing about per-pool price hikes ($1 → $2/pool) and paying extra for texts. I'm building a flat-rate
 > app: $39/mo no matter how many pools, with routes, chem logs, photo service reports emailed automatically,
 > invoicing and payments from your phone, and texts sent from your own number. Would that make you switch?
-> Early access list (founding price locked forever): [link]
+> Early access list (founding price locked forever): https://poolpilot-site.netlify.app/?ref=facebook
 
 **r/sweatystartup** (kurucu hikâyesi tonunda):
 
 > Talked to a few solo pool guys and the #1 complaint is software that charges per pool, so it gets more
 > expensive as you grow. Building a flat $39/mo alternative. If you run a route, what's the one feature you
-> can't live without? [link]
+> can't live without? https://poolpilot-site.netlify.app/?ref=reddit-sweatystartup
+
+Kanal etiketleri: `?ref=facebook-poolpros`, `?ref=reddit-pools`, `?ref=reddit-sweatystartup`, `?ref=supplier` (bayi). Etiket, Formspree'deki **source** alanında görünür.
 
 **Karar kuralı:** Madeni para uygulamasındakiyle aynı. Kayıt oranı %10'un üzerindeyse devam. Ek sinyal: kayıt olanların
 "kaç havuzun var" cevaplarının ortalaması 40'ın üzerindeyse fiyat avantajı gerçek demektir.
